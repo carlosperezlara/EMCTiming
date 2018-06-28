@@ -1,0 +1,69 @@
+TO IDENTIFY BAD RUNS
+./adc
+then do hitmean.C ==> 
+cat hitmean_*.dat  > hitmean.C
+plothitmean.C // tag manually runs that have big offset
+cp runs.dat gruns.dat // and remove the runs wich are bad
+root tagTowerserRun() *running mode createhitdensity
+root tagTowerperRun() *running mode CreateBadTowerList
+you have now the badtowers.dat file there
+
+./tdc3  /// already uses badtowers.dat
+//it creates profiles per adc range
+cd out/
+./add3.sh // merges all gruns.dat
+root plottimemean.C // this creates badtowerstof.dat
+
+
+//========================
+
+Step 1
+./tof1
+creates TProfile of <TDC> vs ADC per sector
+(identify plateau per run)
+root step1_timemean.C  // creates one timemean_RUNNO.dat
+cat timemean_*.dat > step1_timemean.dat
+
+//=============
+
+Step 2
+./tdc2 (reads step1_timemean.dat)
+produce out/MyResults2_RUN.root >> all2.root
+root findrange.C
+it will create ranges.dat (one line per tower)
+
+//=============
+STEP 3
+./tof2 (MyResultsTOF2_RUN.root (mergable)
+idea is to compute walks!
+root findmean.C
+
+
+//=============
+STEP 4
+./tof3 (MyResultsTOF3_RUN.root (first real TOF measurement in ns)
+idea is to compute offset by sector
+root step4_sectoroffset.C
+
+//=============
+STEP 5
+./tof4 (MyResultsTOF4_RUN.root (mergable)
+idea is to compute final offset (twr x twr)
+root findmean2.C
+
+
+//=======
+STEP6 (no need)
+./tof5 (MyResultsTOF5_RUN.root everything should look alligned)
+
+
+*.cpp means compilable (use makefile)
+*.C means macro (to run with root)
+configtime.h (here the tables are loaded and called) check the names of files .dat
+
+
+
+
+
+
+
